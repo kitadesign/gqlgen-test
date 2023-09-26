@@ -1,0 +1,11 @@
+type Department implements Node {
+    id: ID!
+    departmentName: String!
+    email: String!
+}
+
+# 下記を追記
+type DepartmentPagination implements Pagination {
+    pageInfo: PaginationInfo!
+    nodes: [Department!]!
+}
