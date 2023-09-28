@@ -96,17 +96,15 @@ func (this DepartmentPagination) GetNodes() []Node {
 }
 
 type Employee struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
-	Gender        Gender `json:"gender"`
-	Email         string `json:"email"`
-	LatestLoginAt string `json:"latestLoginAt"`
-	//  扶養家族の人数
-	DependentsNum int `json:"dependentsNum"`
-	//  管理職かどうか
-	IsManager  bool        `json:"isManager"`
-	Department *Department `json:"department"`
-	Company    *Company    `json:"company"`
+	ID            string      `json:"id"`
+	Name          string      `json:"name"`
+	Gender        Gender      `json:"gender"`
+	Email         string      `json:"email"`
+	LatestLoginAt string      `json:"latestLoginAt"`
+	DependentsNum int         `json:"dependentsNum"`
+	IsManager     bool        `json:"isManager"`
+	Department    *Department `json:"department"`
+	Company       *Company    `json:"company"`
 }
 
 func (Employee) IsNode()            {}

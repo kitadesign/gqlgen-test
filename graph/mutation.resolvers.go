@@ -7,56 +7,24 @@ package graph
 import (
 	"context"
 	"fmt"
-
-	"github.com/kitadesign/gqlgen-test/graph/model"
 )
 
-// CreateCompany is the resolver for the createCompany field.
-func (r *mutationResolver) CreateCompany(ctx context.Context, input model.CreateCompanyInput) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: CreateCompany - createCompany"))
-}
-
-// UpdateCompany is the resolver for the updateCompany field.
-func (r *mutationResolver) UpdateCompany(ctx context.Context, input model.UpdateCompanyInput) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: UpdateCompany - updateCompany"))
-}
-
-// DeleteCompany is the resolver for the deleteCompany field.
-func (r *mutationResolver) DeleteCompany(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCompany - deleteCompany"))
-}
-
-// CreateDepartment is the resolver for the createDepartment field.
-func (r *mutationResolver) CreateDepartment(ctx context.Context, input model.CreateDepartmentInput) (*model.Department, error) {
-	panic(fmt.Errorf("not implemented: CreateDepartment - createDepartment"))
-}
-
-// UpdateDepartment is the resolver for the updateDepartment field.
-func (r *mutationResolver) UpdateDepartment(ctx context.Context, input model.UpdateDepartmentInput) (*model.Department, error) {
-	panic(fmt.Errorf("not implemented: UpdateDepartment - updateDepartment"))
-}
-
-// DeleteDepartment is the resolver for the deleteDepartment field.
-func (r *mutationResolver) DeleteDepartment(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteDepartment - deleteDepartment"))
-}
-
-// CreateEmployee is the resolver for the createEmployee field.
-func (r *mutationResolver) CreateEmployee(ctx context.Context, input model.CreateEmployeeInput) (*model.Employee, error) {
-	panic(fmt.Errorf("not implemented: CreateEmployee - createEmployee"))
-}
-
-// UpdateEmployee is the resolver for the updateEmployee field.
-func (r *mutationResolver) UpdateEmployee(ctx context.Context, input model.UpdateEmployeeInput) (*model.Employee, error) {
-	panic(fmt.Errorf("not implemented: UpdateEmployee - updateEmployee"))
-}
-
-// DeleteEmployee is the resolver for the deleteEmployee field.
-func (r *mutationResolver) DeleteEmployee(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteEmployee - deleteEmployee"))
+// Status is the resolver for the status field.
+func (r *mutationResolver) Status(ctx context.Context) (string, error) {
+	return "ok", nil
 }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) Test(ctx context.Context, id string) (string, error) {
+	panic(fmt.Errorf("not implemented: Test - test"))
+}

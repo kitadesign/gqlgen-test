@@ -7,41 +7,24 @@ package graph
 import (
 	"context"
 	"fmt"
-
-	"github.com/kitadesign/gqlgen-test/graph/model"
 )
 
-// Company is the resolver for the company field.
-func (r *queryResolver) Company(ctx context.Context, id string) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: Company - company"))
-}
-
-// Companies is the resolver for the companies field.
-func (r *queryResolver) Companies(ctx context.Context, limit int, offset *int) (*model.CompanyPagination, error) {
-	panic(fmt.Errorf("not implemented: Companies - companies"))
-}
-
-// Department is the resolver for the department field.
-func (r *queryResolver) Department(ctx context.Context, id string) (*model.Department, error) {
-	panic(fmt.Errorf("not implemented: Department - department"))
-}
-
-// Departments is the resolver for the departments field.
-func (r *queryResolver) Departments(ctx context.Context, limit int, offset *int) (*model.DepartmentPagination, error) {
-	panic(fmt.Errorf("not implemented: Departments - departments"))
-}
-
-// Employee is the resolver for the employee field.
-func (r *queryResolver) Employee(ctx context.Context, id string) (*model.Employee, error) {
-	panic(fmt.Errorf("not implemented: Employee - employee"))
-}
-
-// Employees is the resolver for the employees field.
-func (r *queryResolver) Employees(ctx context.Context, limit int, offset *int, email *string, gender *model.Gender, isManager *bool, hasDependent *bool) (*model.EmployeePagination, error) {
-	panic(fmt.Errorf("not implemented: Employees - employees"))
+// Status is the resolver for the status field.
+func (r *queryResolver) Status(ctx context.Context) (string, error) {
+	return "ok", nil
 }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) Test(ctx context.Context, id string) (string, error) {
+	panic(fmt.Errorf("not implemented: Test - test"))
+}

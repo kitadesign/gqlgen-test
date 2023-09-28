@@ -19,3 +19,39 @@ type EmployeePagination implements Pagination {
     pageInfo: PaginationInfo!
     nodes: [Employee!]!
 }
+
+extend type Query {
+    employee(id: ID!): Employee
+    employees(
+        limit: Int!,
+        offset: Int,
+        email: String
+        gender: Gender,
+        isManager: Boolean,
+        hasDependent: Boolean
+    ): EmployeePagination!
+}
+
+extend type Mutation {
+    createEmployee(input: CreateEmployeeInput!): Employee!
+    updateEmployee(input: UpdateEmployeeInput!): Employee!
+    deleteEmployee(id: ID!): Boolean!
+    mergeEmployee(id1: ID!, id2: ID!): Boolean!
+}
+
+input CreateEmployeeInput {
+    name: String!
+    gender: Gender!
+    email: String!
+    dependentsNum: Int!
+    isManager: Boolean!
+}
+
+input UpdateEmployeeInput {
+    id: ID!
+    name: String
+    gender: Gender
+    email: String
+    dependentsNum: Int
+    isManager: Boolean
+}

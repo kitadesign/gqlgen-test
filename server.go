@@ -10,6 +10,8 @@ import (
 	"github.com/kitadesign/gqlgen-test/graph"
 )
 
+// go run -mod=mod github.com/99designs/gqlgen generate
+
 const defaultPort = "8080"
 
 func main() {
@@ -17,7 +19,6 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
