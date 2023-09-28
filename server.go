@@ -8,11 +8,12 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/kitadesign/gqlgen-test/graph"
+	"github.com/kitadesign/gqlgen-test/graph/resolver"
 )
 
 // go run -mod=mod github.com/99designs/gqlgen generate
 
-const defaultPort = "8080"
+const defaultPort = "18080"
 
 func main() {
 	port := os.Getenv("PORT")
@@ -20,7 +21,7 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &resolver.Resolver{}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
