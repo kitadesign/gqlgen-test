@@ -8,16 +8,28 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kitadesign/gqlgen-test/graph"
 	"github.com/kitadesign/gqlgen-test/graph/model"
+	"github.com/kitadesign/gqlgen-test/models"
 )
 
+// Departments is the resolver for the departments field.
+func (r *companyResolver) Departments(ctx context.Context, obj *models.Company) (*model.DepartmentPagination, error) {
+	panic(fmt.Errorf("not implemented: Departments - departments"))
+}
+
+// Employees is the resolver for the employees field.
+func (r *companyResolver) Employees(ctx context.Context, obj *models.Company) (*model.EmployeePagination, error) {
+	panic(fmt.Errorf("not implemented: Employees - employees"))
+}
+
 // CreateCompany is the resolver for the createCompany field.
-func (r *mutationResolver) CreateCompany(ctx context.Context, input model.CreateCompanyInput) (*model.Company, error) {
+func (r *mutationResolver) CreateCompany(ctx context.Context, input model.CreateCompanyInput) (*models.Company, error) {
 	panic(fmt.Errorf("not implemented: CreateCompany - createCompany"))
 }
 
 // UpdateCompany is the resolver for the updateCompany field.
-func (r *mutationResolver) UpdateCompany(ctx context.Context, input model.UpdateCompanyInput) (*model.Company, error) {
+func (r *mutationResolver) UpdateCompany(ctx context.Context, input model.UpdateCompanyInput) (*models.Company, error) {
 	panic(fmt.Errorf("not implemented: UpdateCompany - updateCompany"))
 }
 
@@ -27,7 +39,7 @@ func (r *mutationResolver) DeleteCompany(ctx context.Context, id string) (bool, 
 }
 
 // Company is the resolver for the company field.
-func (r *queryResolver) Company(ctx context.Context, id string) (*model.Company, error) {
+func (r *queryResolver) Company(ctx context.Context, id string) (*models.Company, error) {
 	panic(fmt.Errorf("not implemented: Company - company"))
 }
 
@@ -35,3 +47,8 @@ func (r *queryResolver) Company(ctx context.Context, id string) (*model.Company,
 func (r *queryResolver) Companies(ctx context.Context, limit int, offset *int) (*model.CompanyPagination, error) {
 	panic(fmt.Errorf("not implemented: Companies - companies"))
 }
+
+// Company returns graph.CompanyResolver implementation.
+func (r *Resolver) Company() graph.CompanyResolver { return &companyResolver{r} }
+
+type companyResolver struct{ *Resolver }

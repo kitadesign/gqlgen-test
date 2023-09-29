@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/kitadesign/gqlgen-test/graph/model"
+	"github.com/kitadesign/gqlgen-test/models"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -37,6 +38,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Company() CompanyResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -116,32 +118,36 @@ type ComplexityRoot struct {
 		Department  func(childComplexity int, id string) int
 		Departments func(childComplexity int, limit int, offset *int) int
 		Employee    func(childComplexity int, id string) int
-		Employees   func(childComplexity int, limit int, offset *int, email *string, gender *model.Gender, isManager *bool, hasDependent *bool) int
+		Employees   func(childComplexity int, limit int, offset *int, email *string, gender *models.Gender, isManager *bool, hasDependent *bool) int
 		Status      func(childComplexity int) int
 	}
 }
 
+type CompanyResolver interface {
+	Departments(ctx context.Context, obj *models.Company) (*model.DepartmentPagination, error)
+	Employees(ctx context.Context, obj *models.Company) (*model.EmployeePagination, error)
+}
 type MutationResolver interface {
 	Status(ctx context.Context) (string, error)
-	CreateCompany(ctx context.Context, input model.CreateCompanyInput) (*model.Company, error)
-	UpdateCompany(ctx context.Context, input model.UpdateCompanyInput) (*model.Company, error)
+	CreateCompany(ctx context.Context, input model.CreateCompanyInput) (*models.Company, error)
+	UpdateCompany(ctx context.Context, input model.UpdateCompanyInput) (*models.Company, error)
 	DeleteCompany(ctx context.Context, id string) (bool, error)
-	CreateDepartment(ctx context.Context, input model.CreateDepartmentInput) (*model.Department, error)
-	UpdateDepartment(ctx context.Context, input model.UpdateDepartmentInput) (*model.Department, error)
+	CreateDepartment(ctx context.Context, input model.CreateDepartmentInput) (*models.Department, error)
+	UpdateDepartment(ctx context.Context, input model.UpdateDepartmentInput) (*models.Department, error)
 	DeleteDepartment(ctx context.Context, id string) (bool, error)
-	CreateEmployee(ctx context.Context, input model.CreateEmployeeInput) (*model.Employee, error)
-	UpdateEmployee(ctx context.Context, input model.UpdateEmployeeInput) (*model.Employee, error)
+	CreateEmployee(ctx context.Context, input model.CreateEmployeeInput) (*models.Employee, error)
+	UpdateEmployee(ctx context.Context, input model.UpdateEmployeeInput) (*models.Employee, error)
 	DeleteEmployee(ctx context.Context, id string) (bool, error)
 	MergeEmployee(ctx context.Context, id1 string, id2 string) (bool, error)
 }
 type QueryResolver interface {
 	Status(ctx context.Context) (string, error)
-	Company(ctx context.Context, id string) (*model.Company, error)
+	Company(ctx context.Context, id string) (*models.Company, error)
 	Companies(ctx context.Context, limit int, offset *int) (*model.CompanyPagination, error)
-	Department(ctx context.Context, id string) (*model.Department, error)
+	Department(ctx context.Context, id string) (*models.Department, error)
 	Departments(ctx context.Context, limit int, offset *int) (*model.DepartmentPagination, error)
-	Employee(ctx context.Context, id string) (*model.Employee, error)
-	Employees(ctx context.Context, limit int, offset *int, email *string, gender *model.Gender, isManager *bool, hasDependent *bool) (*model.EmployeePagination, error)
+	Employee(ctx context.Context, id string) (*models.Employee, error)
+	Employees(ctx context.Context, limit int, offset *int, email *string, gender *models.Gender, isManager *bool, hasDependent *bool) (*model.EmployeePagination, error)
 }
 
 type executableSchema struct {
@@ -566,7 +572,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Employees(childComplexity, args["limit"].(int), args["offset"].(*int), args["email"].(*string), args["gender"].(*model.Gender), args["isManager"].(*bool), args["hasDependent"].(*bool)), true
+		return e.complexity.Query.Employees(childComplexity, args["limit"].(int), args["offset"].(*int), args["email"].(*string), args["gender"].(*models.Gender), args["isManager"].(*bool), args["hasDependent"].(*bool)), true
 
 	case "Query.status":
 		if e.complexity.Query.Status == nil {
@@ -1007,10 +1013,10 @@ func (ec *executionContext) field_Query_employees_args(ctx context.Context, rawA
 		}
 	}
 	args["email"] = arg2
-	var arg3 *model.Gender
+	var arg3 *models.Gender
 	if tmp, ok := rawArgs["gender"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
-		arg3, err = ec.unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx, tmp)
+		arg3, err = ec.unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1075,7 +1081,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Company_id(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_id(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1119,7 +1125,7 @@ func (ec *executionContext) fieldContext_Company_id(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_companyName(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_companyName(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_companyName(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1163,7 +1169,7 @@ func (ec *executionContext) fieldContext_Company_companyName(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_representative(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_representative(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_representative(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1207,7 +1213,7 @@ func (ec *executionContext) fieldContext_Company_representative(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_phoneNumber(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1251,7 +1257,7 @@ func (ec *executionContext) fieldContext_Company_phoneNumber(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_departments(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_departments(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_departments(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1265,7 +1271,7 @@ func (ec *executionContext) _Company_departments(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Departments, nil
+		return ec.resolvers.Company().Departments(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1286,8 +1292,8 @@ func (ec *executionContext) fieldContext_Company_departments(ctx context.Context
 	fc = &graphql.FieldContext{
 		Object:     "Company",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "pageInfo":
@@ -1301,7 +1307,7 @@ func (ec *executionContext) fieldContext_Company_departments(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_employees(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_employees(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_employees(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1315,7 +1321,7 @@ func (ec *executionContext) _Company_employees(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Employees, nil
+		return ec.resolvers.Company().Employees(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1336,8 +1342,8 @@ func (ec *executionContext) fieldContext_Company_employees(ctx context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "Company",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "pageInfo":
@@ -1435,9 +1441,9 @@ func (ec *executionContext) _CompanyPagination_nodes(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Company)
+	res := resTmp.([]*models.Company)
 	fc.Result = res
-	return ec.marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompanyᚄ(ctx, field.Selections, res)
+	return ec.marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompanyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompanyPagination_nodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1467,7 +1473,7 @@ func (ec *executionContext) fieldContext_CompanyPagination_nodes(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Department_id(ctx context.Context, field graphql.CollectedField, obj *model.Department) (ret graphql.Marshaler) {
+func (ec *executionContext) _Department_id(ctx context.Context, field graphql.CollectedField, obj *models.Department) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Department_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1511,7 +1517,7 @@ func (ec *executionContext) fieldContext_Department_id(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Department_departmentName(ctx context.Context, field graphql.CollectedField, obj *model.Department) (ret graphql.Marshaler) {
+func (ec *executionContext) _Department_departmentName(ctx context.Context, field graphql.CollectedField, obj *models.Department) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Department_departmentName(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1555,7 +1561,7 @@ func (ec *executionContext) fieldContext_Department_departmentName(ctx context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _Department_email(ctx context.Context, field graphql.CollectedField, obj *model.Department) (ret graphql.Marshaler) {
+func (ec *executionContext) _Department_email(ctx context.Context, field graphql.CollectedField, obj *models.Department) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Department_email(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1683,9 +1689,9 @@ func (ec *executionContext) _DepartmentPagination_nodes(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Department)
+	res := resTmp.([]*models.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_DepartmentPagination_nodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1709,7 +1715,7 @@ func (ec *executionContext) fieldContext_DepartmentPagination_nodes(ctx context.
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_id(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_id(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1753,7 +1759,7 @@ func (ec *executionContext) fieldContext_Employee_id(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_name(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_name(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1797,7 +1803,7 @@ func (ec *executionContext) fieldContext_Employee_name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_gender(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_gender(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_gender(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1823,9 +1829,9 @@ func (ec *executionContext) _Employee_gender(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Gender)
+	res := resTmp.(models.Gender)
 	fc.Result = res
-	return ec.marshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx, field.Selections, res)
+	return ec.marshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Employee_gender(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1841,7 +1847,7 @@ func (ec *executionContext) fieldContext_Employee_gender(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_email(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_email(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_email(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1885,7 +1891,7 @@ func (ec *executionContext) fieldContext_Employee_email(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_latestLoginAt(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_latestLoginAt(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_latestLoginAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1929,7 +1935,7 @@ func (ec *executionContext) fieldContext_Employee_latestLoginAt(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_dependentsNum(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_dependentsNum(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_dependentsNum(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1973,7 +1979,7 @@ func (ec *executionContext) fieldContext_Employee_dependentsNum(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_isManager(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_isManager(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_isManager(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2017,7 +2023,7 @@ func (ec *executionContext) fieldContext_Employee_isManager(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_department(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_department(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_department(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2043,9 +2049,9 @@ func (ec *executionContext) _Employee_department(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Department)
+	res := resTmp.(*models.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Employee_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2069,7 +2075,7 @@ func (ec *executionContext) fieldContext_Employee_department(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Employee_company(ctx context.Context, field graphql.CollectedField, obj *model.Employee) (ret graphql.Marshaler) {
+func (ec *executionContext) _Employee_company(ctx context.Context, field graphql.CollectedField, obj *models.Employee) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Employee_company(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2095,9 +2101,9 @@ func (ec *executionContext) _Employee_company(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Company)
+	res := resTmp.(*models.Company)
 	fc.Result = res
-	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx, field.Selections, res)
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Employee_company(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2211,9 +2217,9 @@ func (ec *executionContext) _EmployeePagination_nodes(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Employee)
+	res := resTmp.([]*models.Employee)
 	fc.Result = res
-	return ec.marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployeeᚄ(ctx, field.Selections, res)
+	return ec.marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployeeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_EmployeePagination_nodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2319,9 +2325,9 @@ func (ec *executionContext) _Mutation_createCompany(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Company)
+	res := resTmp.(*models.Company)
 	fc.Result = res
-	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx, field.Selections, res)
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createCompany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2388,9 +2394,9 @@ func (ec *executionContext) _Mutation_updateCompany(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Company)
+	res := resTmp.(*models.Company)
 	fc.Result = res
-	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx, field.Selections, res)
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateCompany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2512,9 +2518,9 @@ func (ec *executionContext) _Mutation_createDepartment(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Department)
+	res := resTmp.(*models.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createDepartment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2575,9 +2581,9 @@ func (ec *executionContext) _Mutation_updateDepartment(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Department)
+	res := resTmp.(*models.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateDepartment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2693,9 +2699,9 @@ func (ec *executionContext) _Mutation_createEmployee(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Employee)
+	res := resTmp.(*models.Employee)
 	fc.Result = res
-	return ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx, field.Selections, res)
+	return ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createEmployee(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2768,9 +2774,9 @@ func (ec *executionContext) _Mutation_updateEmployee(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Employee)
+	res := resTmp.(*models.Employee)
 	fc.Result = res
-	return ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx, field.Selections, res)
+	return ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateEmployee(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3258,9 +3264,9 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Company)
+	res := resTmp.(*models.Company)
 	fc.Result = res
-	return ec.marshalOCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx, field.Selections, res)
+	return ec.marshalOCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_company(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3385,9 +3391,9 @@ func (ec *executionContext) _Query_department(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Department)
+	res := resTmp.(*models.Department)
 	fc.Result = res
-	return ec.marshalODepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalODepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3506,9 +3512,9 @@ func (ec *executionContext) _Query_employee(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Employee)
+	res := resTmp.(*models.Employee)
 	fc.Result = res
-	return ec.marshalOEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx, field.Selections, res)
+	return ec.marshalOEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_employee(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3569,7 +3575,7 @@ func (ec *executionContext) _Query_employees(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Employees(rctx, fc.Args["limit"].(int), fc.Args["offset"].(*int), fc.Args["email"].(*string), fc.Args["gender"].(*model.Gender), fc.Args["isManager"].(*bool), fc.Args["hasDependent"].(*bool))
+		return ec.resolvers.Query().Employees(rctx, fc.Args["limit"].(int), fc.Args["offset"].(*int), fc.Args["email"].(*string), fc.Args["gender"].(*models.Gender), fc.Args["isManager"].(*bool), fc.Args["hasDependent"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5630,7 +5636,7 @@ func (ec *executionContext) unmarshalInputCreateEmployeeInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
-			data, err := ec.unmarshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx, v)
+			data, err := ec.unmarshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5807,7 +5813,7 @@ func (ec *executionContext) unmarshalInputUpdateEmployeeInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
-			data, err := ec.unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx, v)
+			data, err := ec.unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5853,23 +5859,23 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case model.Company:
+	case models.Company:
 		return ec._Company(ctx, sel, &obj)
-	case *model.Company:
+	case *models.Company:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Company(ctx, sel, obj)
-	case model.Department:
+	case models.Department:
 		return ec._Department(ctx, sel, &obj)
-	case *model.Department:
+	case *models.Department:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Department(ctx, sel, obj)
-	case model.Employee:
+	case models.Employee:
 		return ec._Employee(ctx, sel, &obj)
-	case *model.Employee:
+	case *models.Employee:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -5915,7 +5921,7 @@ func (ec *executionContext) _Pagination(ctx context.Context, sel ast.SelectionSe
 
 var companyImplementors = []string{"Company", "Node"}
 
-func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, obj *model.Company) graphql.Marshaler {
+func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, obj *models.Company) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, companyImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -5927,33 +5933,95 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Company_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "companyName":
 			out.Values[i] = ec._Company_companyName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "representative":
 			out.Values[i] = ec._Company_representative(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "phoneNumber":
 			out.Values[i] = ec._Company_phoneNumber(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "departments":
-			out.Values[i] = ec._Company_departments(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Company_departments(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "employees":
-			out.Values[i] = ec._Company_employees(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Company_employees(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6023,7 +6091,7 @@ func (ec *executionContext) _CompanyPagination(ctx context.Context, sel ast.Sele
 
 var departmentImplementors = []string{"Department", "Node"}
 
-func (ec *executionContext) _Department(ctx context.Context, sel ast.SelectionSet, obj *model.Department) graphql.Marshaler {
+func (ec *executionContext) _Department(ctx context.Context, sel ast.SelectionSet, obj *models.Department) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, departmentImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -6116,7 +6184,7 @@ func (ec *executionContext) _DepartmentPagination(ctx context.Context, sel ast.S
 
 var employeeImplementors = []string{"Employee", "Node"}
 
-func (ec *executionContext) _Employee(ctx context.Context, sel ast.SelectionSet, obj *model.Employee) graphql.Marshaler {
+func (ec *executionContext) _Employee(ctx context.Context, sel ast.SelectionSet, obj *models.Employee) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, employeeImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -6956,11 +7024,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCompany2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx context.Context, sel ast.SelectionSet, v model.Company) graphql.Marshaler {
+func (ec *executionContext) marshalNCompany2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx context.Context, sel ast.SelectionSet, v models.Company) graphql.Marshaler {
 	return ec._Company(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompanyᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Company) graphql.Marshaler {
+func (ec *executionContext) marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompanyᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Company) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6984,7 +7052,7 @@ func (ec *executionContext) marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgq
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx, sel, v[i])
+			ret[i] = ec.marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7004,7 +7072,7 @@ func (ec *executionContext) marshalNCompany2ᚕᚖgithubᚗcomᚋkitadesignᚋgq
 	return ret
 }
 
-func (ec *executionContext) marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx context.Context, sel ast.SelectionSet, v *model.Company) graphql.Marshaler {
+func (ec *executionContext) marshalNCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx context.Context, sel ast.SelectionSet, v *models.Company) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7043,11 +7111,11 @@ func (ec *executionContext) unmarshalNCreateEmployeeInput2githubᚗcomᚋkitades
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDepartment2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx context.Context, sel ast.SelectionSet, v models.Department) graphql.Marshaler {
 	return ec._Department(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Department) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7071,7 +7139,7 @@ func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesign�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx, sel, v[i])
+			ret[i] = ec.marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7091,7 +7159,7 @@ func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋkitadesign�
 	return ret
 }
 
-func (ec *executionContext) marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *models.Department) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7115,11 +7183,11 @@ func (ec *executionContext) marshalNDepartmentPagination2ᚖgithubᚗcomᚋkitad
 	return ec._DepartmentPagination(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNEmployee2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx context.Context, sel ast.SelectionSet, v model.Employee) graphql.Marshaler {
+func (ec *executionContext) marshalNEmployee2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx context.Context, sel ast.SelectionSet, v models.Employee) graphql.Marshaler {
 	return ec._Employee(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployeeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Employee) graphql.Marshaler {
+func (ec *executionContext) marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployeeᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Employee) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7143,7 +7211,7 @@ func (ec *executionContext) marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋg
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx, sel, v[i])
+			ret[i] = ec.marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7163,7 +7231,7 @@ func (ec *executionContext) marshalNEmployee2ᚕᚖgithubᚗcomᚋkitadesignᚋg
 	return ret
 }
 
-func (ec *executionContext) marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx context.Context, sel ast.SelectionSet, v *model.Employee) graphql.Marshaler {
+func (ec *executionContext) marshalNEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx context.Context, sel ast.SelectionSet, v *models.Employee) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7187,13 +7255,13 @@ func (ec *executionContext) marshalNEmployeePagination2ᚖgithubᚗcomᚋkitades
 	return ec._EmployeePagination(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx context.Context, v interface{}) (model.Gender, error) {
-	var res model.Gender
+func (ec *executionContext) unmarshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx context.Context, v interface{}) (models.Gender, error) {
+	var res models.Gender
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx context.Context, sel ast.SelectionSet, v model.Gender) graphql.Marshaler {
+func (ec *executionContext) marshalNGender2githubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx context.Context, sel ast.SelectionSet, v models.Gender) graphql.Marshaler {
 	return v
 }
 
@@ -7561,37 +7629,37 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐCompany(ctx context.Context, sel ast.SelectionSet, v *model.Company) graphql.Marshaler {
+func (ec *executionContext) marshalOCompany2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐCompany(ctx context.Context, sel ast.SelectionSet, v *models.Company) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Company(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalODepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalODepartment2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *models.Department) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Department(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐEmployee(ctx context.Context, sel ast.SelectionSet, v *model.Employee) graphql.Marshaler {
+func (ec *executionContext) marshalOEmployee2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐEmployee(ctx context.Context, sel ast.SelectionSet, v *models.Employee) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Employee(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx context.Context, v interface{}) (*model.Gender, error) {
+func (ec *executionContext) unmarshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx context.Context, v interface{}) (*models.Gender, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(model.Gender)
+	var res = new(models.Gender)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋgraphᚋmodelᚐGender(ctx context.Context, sel ast.SelectionSet, v *model.Gender) graphql.Marshaler {
+func (ec *executionContext) marshalOGender2ᚖgithubᚗcomᚋkitadesignᚋgqlgenᚑtestᚋmodelsᚐGender(ctx context.Context, sel ast.SelectionSet, v *models.Gender) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

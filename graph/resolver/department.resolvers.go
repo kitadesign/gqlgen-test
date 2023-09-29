@@ -9,15 +9,16 @@ import (
 	"fmt"
 
 	"github.com/kitadesign/gqlgen-test/graph/model"
+	"github.com/kitadesign/gqlgen-test/models"
 )
 
 // CreateDepartment is the resolver for the createDepartment field.
-func (r *mutationResolver) CreateDepartment(ctx context.Context, input model.CreateDepartmentInput) (*model.Department, error) {
+func (r *mutationResolver) CreateDepartment(ctx context.Context, input model.CreateDepartmentInput) (*models.Department, error) {
 	panic(fmt.Errorf("not implemented: CreateDepartment - createDepartment"))
 }
 
 // UpdateDepartment is the resolver for the updateDepartment field.
-func (r *mutationResolver) UpdateDepartment(ctx context.Context, input model.UpdateDepartmentInput) (*model.Department, error) {
+func (r *mutationResolver) UpdateDepartment(ctx context.Context, input model.UpdateDepartmentInput) (*models.Department, error) {
 	panic(fmt.Errorf("not implemented: UpdateDepartment - updateDepartment"))
 }
 
@@ -27,7 +28,7 @@ func (r *mutationResolver) DeleteDepartment(ctx context.Context, id string) (boo
 }
 
 // Department is the resolver for the department field.
-func (r *queryResolver) Department(ctx context.Context, id string) (*model.Department, error) {
+func (r *queryResolver) Department(ctx context.Context, id string) (*models.Department, error) {
 	panic(fmt.Errorf("not implemented: Department - department"))
 }
 

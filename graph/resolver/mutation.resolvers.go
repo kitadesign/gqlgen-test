@@ -6,14 +6,13 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kitadesign/gqlgen-test/graph"
 )
 
 // Status is the resolver for the status field.
 func (r *mutationResolver) Status(ctx context.Context) (string, error) {
-	panic(fmt.Errorf("not implemented: Status - status"))
+	return "ok", nil
 }
 
 // Mutation returns graph.MutationResolver implementation.

@@ -7,7 +7,6 @@ type Company implements Node {
     employees: EmployeePagination!
 }
 
-# 後ほど使うので併せて定義
 type CompanyPagination implements Pagination{
     pageInfo: PaginationInfo!
     nodes: [Company!]!

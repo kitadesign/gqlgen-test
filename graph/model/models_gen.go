@@ -3,9 +3,7 @@
 package model
 
 import (
-	"fmt"
-	"io"
-	"strconv"
+	"github.com/kitadesign/gqlgen-test/models"
 )
 
 type Node interface {
@@ -19,21 +17,9 @@ type Pagination interface {
 	GetNodes() []Node
 }
 
-type Company struct {
-	ID             string                `json:"id"`
-	CompanyName    string                `json:"companyName"`
-	Representative string                `json:"representative"`
-	PhoneNumber    string                `json:"phoneNumber"`
-	Departments    *DepartmentPagination `json:"departments"`
-	Employees      *EmployeePagination   `json:"employees"`
-}
-
-func (Company) IsNode()            {}
-func (this Company) GetID() string { return this.ID }
-
 type CompanyPagination struct {
-	PageInfo *PaginationInfo `json:"pageInfo"`
-	Nodes    []*Company      `json:"nodes"`
+	PageInfo *PaginationInfo   `json:"pageInfo"`
+	Nodes    []*models.Company `json:"nodes"`
 }
 
 func (CompanyPagination) IsPagination()                     {}
@@ -61,25 +47,16 @@ type CreateDepartmentInput struct {
 }
 
 type CreateEmployeeInput struct {
-	Name          string `json:"name"`
-	Gender        Gender `json:"gender"`
-	Email         string `json:"email"`
-	DependentsNum int    `json:"dependentsNum"`
-	IsManager     bool   `json:"isManager"`
+	Name          string        `json:"name"`
+	Gender        models.Gender `json:"gender"`
+	Email         string        `json:"email"`
+	DependentsNum int           `json:"dependentsNum"`
+	IsManager     bool          `json:"isManager"`
 }
-
-type Department struct {
-	ID             string `json:"id"`
-	DepartmentName string `json:"departmentName"`
-	Email          string `json:"email"`
-}
-
-func (Department) IsNode()            {}
-func (this Department) GetID() string { return this.ID }
 
 type DepartmentPagination struct {
-	PageInfo *PaginationInfo `json:"pageInfo"`
-	Nodes    []*Department   `json:"nodes"`
+	PageInfo *PaginationInfo      `json:"pageInfo"`
+	Nodes    []*models.Department `json:"nodes"`
 }
 
 func (DepartmentPagination) IsPagination()                     {}
@@ -95,24 +72,9 @@ func (this DepartmentPagination) GetNodes() []Node {
 	return interfaceSlice
 }
 
-type Employee struct {
-	ID            string      `json:"id"`
-	Name          string      `json:"name"`
-	Gender        Gender      `json:"gender"`
-	Email         string      `json:"email"`
-	LatestLoginAt string      `json:"latestLoginAt"`
-	DependentsNum int         `json:"dependentsNum"`
-	IsManager     bool        `json:"isManager"`
-	Department    *Department `json:"department"`
-	Company       *Company    `json:"company"`
-}
-
-func (Employee) IsNode()            {}
-func (this Employee) GetID() string { return this.ID }
-
 type EmployeePagination struct {
-	PageInfo *PaginationInfo `json:"pageInfo"`
-	Nodes    []*Employee     `json:"nodes"`
+	PageInfo *PaginationInfo    `json:"pageInfo"`
+	Nodes    []*models.Employee `json:"nodes"`
 }
 
 func (EmployeePagination) IsPagination()                     {}
@@ -151,51 +113,10 @@ type UpdateDepartmentInput struct {
 }
 
 type UpdateEmployeeInput struct {
-	ID            string  `json:"id"`
-	Name          *string `json:"name,omitempty"`
-	Gender        *Gender `json:"gender,omitempty"`
-	Email         *string `json:"email,omitempty"`
-	DependentsNum *int    `json:"dependentsNum,omitempty"`
-	IsManager     *bool   `json:"isManager,omitempty"`
-}
-
-type Gender string
-
-const (
-	GenderMale   Gender = "Male"
-	GenderFemale Gender = "Female"
-)
-
-var AllGender = []Gender{
-	GenderMale,
-	GenderFemale,
-}
-
-func (e Gender) IsValid() bool {
-	switch e {
-	case GenderMale, GenderFemale:
-		return true
-	}
-	return false
-}
-
-func (e Gender) String() string {
-	return string(e)
-}
-
-func (e *Gender) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = Gender(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Gender", str)
-	}
-	return nil
-}
-
-func (e Gender) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
+	ID            string         `json:"id"`
+	Name          *string        `json:"name,omitempty"`
+	Gender        *models.Gender `json:"gender,omitempty"`
+	Email         *string        `json:"email,omitempty"`
+	DependentsNum *int           `json:"dependentsNum,omitempty"`
+	IsManager     *bool          `json:"isManager,omitempty"`
 }

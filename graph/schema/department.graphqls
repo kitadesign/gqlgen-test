@@ -4,7 +4,6 @@ type Department implements Node {
     email: String!
 }
 
-# 下記を追記
 type DepartmentPagination implements Pagination {
     pageInfo: PaginationInfo!
     nodes: [Department!]!
